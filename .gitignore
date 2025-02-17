@@ -1,0 +1,7 @@
+backend/.venv
+telegram/.venv
+
+.gitignore
+.idea
+
+telegram/.env
