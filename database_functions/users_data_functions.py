@@ -23,7 +23,7 @@ def get_admin_contact(admin_name, path_to_database) -> str:
     return admin_contact[0]
 
 
-def get_employee_contact(emlpoyee_name, path_to_database) -> list:
+def get_employee_contact(emlpoyee_name, path_to_database) -> tuple:
     """Возвращает телефон и username сотрудника по его фио"""
 
     data = sqlite3.connect(path_to_database)
