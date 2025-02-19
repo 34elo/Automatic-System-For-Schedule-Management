@@ -52,3 +52,69 @@ def get_all_chat_ids(path_to_database) -> list:
                                         FROM "employees_passwords"''').fetchall()
     chat_ids = [int(id_[0]) for id_ in chat_ids]
     return chat_ids
+
+
+def change_point_wishes(employee, point, mode, path_to_database) -> None:
+    """Устанавливает или удаляет желаемую точку для сотрудника
+       В зависимости от mode
+       mode='set' или mode='remove'"""
+    from database_functions.constants import POINTS
+
+    if point in POINTS:
+
+        data = sqlite3.connect(path_to_database)
+        data_cursor = data.cursor()
+        current_point_wishes = data_cursor.execute(f'''SELECT point_wishes
+                                                       FROM "employees_wishes"
+                                                       WHERE full_name = "{employee}"''').fetchone()[0].split(';')
+        if '' in current_point_wishes:
+            current_point_wishes.remove('')
+        if mode == 'set' and point not in current_point_wishes:
+            current_point_wishes.append(point)
+        elif mode == 'remove' and point in current_point_wishes:
+            current_point_wishes.remove(point)
+        elif mode != 'set' and mode != 'remove':
+            print('Wrong mode in change_point_wishes')
+            raise TypeError
+        point_wishes = ';'.join(current_point_wishes)
+        data_cursor.execute(f'''UPDATE employees_wishes
+                                SET "point_wishes" = "{point_wishes}"
+                                WHERE full_name = "{employee}"''')
+        data.commit()
+        data.close()
+    else:
+        print('Wrong point')
+        raise ValueError
+
+
+def change_day_wishes(employee, day, mode, path_to_database) -> None:
+    """Устанавливает или удаляет желаемую смену для сотрудника
+       В зависимости от mode
+       mode='set' или mode='remove'"""
+    from database_functions.constants import DAYS
+
+    if day in DAYS:
+
+        data = sqlite3.connect(path_to_database)
+        data_cursor = data.cursor()
+        current_day_wishes = data_cursor.execute(f'''SELECT day_wishes
+                                                       FROM "employees_wishes"
+                                                       WHERE full_name = "{employee}"''').fetchone()[0].split(';')
+        if '' in current_day_wishes:
+            current_day_wishes.remove('')
+        if mode == 'set' and day not in current_day_wishes:
+            current_day_wishes.append(day)
+        elif mode == 'remove' and day in current_day_wishes:
+            current_day_wishes.remove(day)
+        elif mode != 'set' and mode != 'remove':
+            print('Wrong mode in change_point_wishes')
+            raise TypeError
+        day_wishes = ';'.join(current_day_wishes)
+        data_cursor.execute(f'''UPDATE employees_wishes
+                                SET "day_wishes" = "{day_wishes}"
+                                WHERE full_name = "{employee}"''')
+        data.commit()
+        data.close()
+    else:
+        print('Wrong day')
+        raise ValueError
