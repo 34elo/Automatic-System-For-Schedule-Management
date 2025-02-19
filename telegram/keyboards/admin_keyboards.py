@@ -11,8 +11,6 @@ def main() -> ReplyKeyboardMarkup:
     kb.button(text="Расписание на точках")
     kb.button(text="Связаться с сотрудником")
     kb.button(text="Количество смен у сотрудников")
-    kb.button(text='Выгрузить в Excel')
-    kb.button(text='Загрузить из Excel')
     kb.adjust(2)
     return kb.as_markup(resize_keyboard=True)
 
