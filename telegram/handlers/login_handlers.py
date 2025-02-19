@@ -50,7 +50,7 @@ async def message_with_text(message: Message, state: FSMContext):
     if check_worker_code(message.text, path_to_database_users):
         await state.clear()
         await message.answer('Вы успешно авторизовались', reply_markup=user_keyboards.main())
-        put_data(message.from_user.id, 'Сотрудник')
+        put_data(message.from_user.id, message.from_user.username, 'Сотрудник', path_to_database_users)
     else:
         await message.answer('Данные неверны, Попробуйте снова')
         await state.set_state(AuthWorker.worker_code)
@@ -61,7 +61,7 @@ async def message_with_text(message: Message, state: FSMContext):
     if check_admin_code(message.text, path_to_database_users):
         await state.clear()
         await message.answer('Вы успешно авторизовались', reply_markup=admin_keyboards.main())
-        put_data(message.from_user.id, 'Администратор')
+        put_data(message.from_user.id, message.from_user.username, 'Администратор', path_to_database_users)
 
     else:
         await message.answer('Данные неверны, Попробуйте снова')

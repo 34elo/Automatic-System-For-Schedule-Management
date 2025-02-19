@@ -2,12 +2,12 @@ import sqlite3
 
 
 def already_auth(name, path_to_database) -> bool:
-    """Возвращает является ли пользователь зарегестрированым"""
+    """Возвращает является ли пользователь зареганым"""
 
     data = sqlite3.connect(path_to_database)
     data_cursor = data.cursor()
     schedule = data_cursor.execute(f'''''').fetchone()
-    return True
+    return False
 
 
 def is_admin(name, path_to_database) -> bool:
@@ -34,8 +34,10 @@ def check_admin_code(code, path_to_database) -> bool:
     return True
 
 
-def put_data(name, path_to_database) -> None:
-    """Запоминает пользователя в бд"""
+def put_data(chat_id, username, role, path_to_database) -> None:
+    """Запоминает пользователя в бд
+    role - 'Администратор' / 'Сотрудник'
+    """
     data = sqlite3.connect(path_to_database)
     data_cursor = data.cursor()
     schedule = data_cursor.execute(f'''''').fetchone()

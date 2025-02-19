@@ -3,6 +3,8 @@ import math
 from aiogram.types import InlineKeyboardButton, KeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup
 from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder, ReplyKeyboardMarkup
 
+from database_functions.constants import DAYS, DAYS_RU
+
 
 def main() -> ReplyKeyboardMarkup:
     kb = ReplyKeyboardBuilder()
@@ -10,8 +12,10 @@ def main() -> ReplyKeyboardMarkup:
     kb.button(text="Отправить уведомление сотрудникам")
     kb.button(text="Расписание на точках")
     kb.button(text="Связаться с сотрудником")
+    kb.button(text="Редактировать график")
     kb.adjust(2)
     return kb.as_markup(resize_keyboard=True)
+
 
 def points_list(all_points: list) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
@@ -46,3 +50,31 @@ def day_week() -> ReplyKeyboardMarkup:
     kb.button(text='Суббота')
     kb.button(text="Воскресенье")
     return kb.as_markup(resize_keyboard=True)
+
+
+def points_list_for_fix(all_points: list) -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+
+    for i in all_points:
+        builder.add(InlineKeyboardButton(
+            text=i,
+            callback_data=f"fix_schedule_{i}"
+        ))
+
+    # Располагаем все кнопки вертикально (по 2 в ряд)
+    builder.adjust(2)
+    return builder.as_markup(resize_keyboard=True)
+
+
+def day_for_fix() -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+
+    for i in range(len(DAYS)):
+        builder.add(InlineKeyboardButton(
+            text=DAYS_RU[i],
+            callback_data=f"day_schedule_{DAYS[i]}"
+        ))
+
+    # Располагаем все кнопки вертикально (по 2 в ряд)
+    builder.adjust(2)
+    return builder.as_markup(resize_keyboard=True)

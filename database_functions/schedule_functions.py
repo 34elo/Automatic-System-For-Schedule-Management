@@ -32,3 +32,9 @@ def get_my_schedule(username, path_to_database_users_data, path_to_database_sche
                 out[i] = point
 
     return out
+
+def fix_edit_schedule(full_name, point, day, path_to_database_schedule) -> None:
+    """
+    Изменяет график
+    """
+    pass

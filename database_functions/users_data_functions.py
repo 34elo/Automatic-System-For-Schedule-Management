@@ -19,7 +19,7 @@ def get_admin_contact(admin_name, path_to_database) -> str:
     data_cursor = data.cursor()
     admin_contact = data_cursor.execute(f'''SELECT username
                                         FROM admin_passwords
-                                        WHERE full_name = "{admin_name}"''').fetchone()
+                                        WHERE  full_name = "{admin_name}"''').fetchone()
     return admin_contact[0]
 
 

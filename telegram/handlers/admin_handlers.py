@@ -6,7 +6,7 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, CallbackQuery
 from aiogram.utils.text_decorations import MarkdownDecoration
 
-from database_functions.constants import POINTS, DAYS
+from database_functions.constants import POINTS, DAYS, DAYS_RU
 from database_functions.schedule_functions import get_schedule
 from database_functions.users_data_functions import get_all_chat_ids, get_employee_contact
 from telegram.config import config
@@ -35,6 +35,11 @@ class ScheduleText(StatesGroup):
 class Contact(StatesGroup):
     contact = State()
 
+class EditSchedule(StatesGroup):
+    day = State()
+    point = State()
+    name = State()
+
 
 def send_notifications(message) -> None:
     chats = get_all_chat_ids(path_to_database_users)
@@ -50,7 +55,7 @@ def get_points() -> list[str]:  # список таблиц с точками
 @admin_router.message(F.text == "Сформировать частичный график")
 async def create_schedule(message: Message) -> None:
     auto_schedule_create()
-    await message.answer('График сформирован. Вы сможете ознакомиться с ним в меню "Расписание на точках"')
+    await message.answer('График сформирован. Вы сможете ознакомиться с ним в меню "Расписание на точках"', reply_markup=admin_keyboards.main())
 
 
 @admin_router.message(F.text == "Отправить уведомление сотрудникам")
@@ -62,7 +67,7 @@ async def send_notification_tg(message: Message, state: FSMContext) -> None:
 @admin_router.message(NotificationText.text)
 async def message_with_text(message: Message, state: FSMContext) -> None:
     send_notifications(message)
-    await message.answer('Ваше уведомление сотрудникам отправлено')
+    await message.answer('Ваше уведомление сотрудникам отправлено', reply_markup=admin_keyboards.main())
     await state.clear()
 
 
@@ -85,8 +90,8 @@ async def get_schedule_point(callback: CallbackQuery) -> None:
                 data = "Отсутствует"
             else:
                 data = datas[i]
-            table += DAYS[i].capitalize() + ' - ' + data + '\n'
-    await callback.message.answer(table)
+            table += DAYS_RU[i].capitalize() + ' - ' + data + '\n'
+    await callback.message.answer(table, reply_markup=admin_keyboards.main())
 
 
 @admin_router.message(F.text == "Связаться с сотрудником")
@@ -101,5 +106,36 @@ async def state_contact(message: Message, state: FSMContext) -> None:
     text = f'Информация о "{message.text}"\n\n'
     text += f'Teлефон: {data[0]}\n'
     text += f'Username: @{data[1]}'
-    await message.answer(text)
+    await message.answer(text, reply_markup=admin_keyboards.main())
     await state.clear()
+
+
+@admin_router.message(F.text == "Редактировать график")
+async def fix_schedule(message: Message) -> None:
+    text = 'Выберите точку из приведенных ниже для редактирования:\n\n'
+    await message.answer(text, reply_markup=admin_keyboards.points_list_for_fix(POINTS))
+
+@admin_router.callback_query(F.data[:13] == 'fix_schedule_')
+async def get_schedule_point(callback: CallbackQuery, state: FSMContext) -> None:
+    point = callback.data[13:]
+    EditSchedule.point = point
+    print(EditSchedule.point)
+    datas = get_schedule(str(point), path_to_database_schedule)
+    await callback.message.answer('Теперь выберите ', reply_markup=admin_keyboards.day_for_fix())
+
+
+@admin_router.callback_query(F.data[:13] == 'day_schedule_')
+async def get_schedule_point(callback: CallbackQuery, state: FSMContext) -> None:
+    day = callback.data[13:]
+    EditSchedule.day = day
+    print(EditSchedule.day)
+    await callback.message.answer('Введите ФИО сотрудника', reply_markup=admin_keyboards.main())
+    await state.set_state(EditSchedule.name)
+
+
+@admin_router.message(EditSchedule.name)
+async def edit_schedule(message: Message, state: FSMContext) -> None:
+    EditSchedule.name = message.text
+    print(EditSchedule.name, EditSchedule.point, EditSchedule.day)
+    fix_edit_schedule()
+    await message.answer('Данные в таблице изменены')

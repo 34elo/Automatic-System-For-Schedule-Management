@@ -1,14 +1,57 @@
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
-from aiogram.utils.keyboard import ReplyKeyboardBuilder
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
+
+from database_functions.constants import DAYS, DAYS_RU
 
 
 def main() -> ReplyKeyboardMarkup:
     kb = ReplyKeyboardBuilder()
-    kb.button(text="Посмотреть свободные смены на определенной точке")
-    kb.button(text="Посмотреть график в определенной точке")
-    kb.button(text="Посмотреть все свои смены")
+    kb.button(text="Получить расписание на точке")
+    kb.button(text="Получить своё расписание")
     kb.button(text="Связь с администратором")
-    kb.button(text='Установить желаемые точки работы')
-    kb.button(text='Установить желаемые смены')
+    kb.button(text='Установить желаемую точку')
+    kb.button(text='Установить желаемую смену')
     kb.adjust(2)
     return kb.as_markup(resize_keyboard=True)
+
+
+def points_list(all_points: list) -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+
+    for i in all_points:
+        builder.add(InlineKeyboardButton(
+            text=i,
+            callback_data=f"get_schedule_{i}"
+        ))
+
+    # Располагаем все кнопки вертикально (по 2 в ряд)
+    builder.adjust(2)
+    return builder.as_markup(resize_keyboard=True)
+
+
+def points_list_for_put_point(all_points: list) -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+
+    for i in all_points:
+        builder.add(InlineKeyboardButton(
+            text=i,
+            callback_data=f"put_point_{i}"
+        ))
+
+    # Располагаем все кнопки вертикально (по 2 в ряд)
+    builder.adjust(2)
+    return builder.as_markup(resize_keyboard=True)
+
+
+def days_list() -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+
+    for i in range(len(DAYS)):
+        builder.add(InlineKeyboardButton(
+            text=DAYS_RU[i],
+            callback_data=f"put_day_{DAYS[i]}"
+        ))
+
+    # Располагаем все кнопки вертикально (по 2 в ряд)
+    builder.adjust(2)
+    return builder.as_markup(resize_keyboard=True)
