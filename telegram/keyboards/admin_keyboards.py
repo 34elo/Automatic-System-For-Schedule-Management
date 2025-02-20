@@ -82,7 +82,7 @@ def day_for_fix() -> InlineKeyboardMarkup:
 
 def election_actions() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
-    buttons = ['назначить на смену', 'снять со смены']
+    buttons = ['Назначить на смену', 'Снять со смены']
     for i in buttons:
         builder.add(InlineKeyboardButton(
             text=i,

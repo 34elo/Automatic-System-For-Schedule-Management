@@ -95,10 +95,10 @@ async def put_schedule_point(callback: CallbackQuery) -> None:
     text = f'Точка успешна изменена на {point}'
     await callback.message.answer(text, reply_markup=user_keyboards.main())
 
+
 @user_router.message(F.text == "Установить желаемую смену")
 async def put_point(message: Message) -> None:
     await message.answer('Выберите желаемую точку', reply_markup=user_keyboards.days_list())
-
 
 
 @user_router.callback_query(F.data[:8] == 'put_day_')

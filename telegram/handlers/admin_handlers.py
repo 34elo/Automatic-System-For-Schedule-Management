@@ -182,19 +182,13 @@ async def get_schedule_point_day(callback: CallbackQuery, state: FSMContext) -> 
 
 @admin_router.callback_query(F.data[:3] == 'do_')
 async def get_schedule_point_day(callback: CallbackQuery, state: FSMContext) -> None:
-    if callback.data[3:] == 'снять со смены':
+    if callback.data[3:] == 'Снять со смены':
         edit_schedule_function(path_to_database_schedule, EditSchedule.point, EditSchedule.day)
-        await callback.message.answer('Таблица успешно изменена!', reply_markup=admin_keyboards.main())
+        await callback.message.answer('Таблица успешно изменена!')
+        await state.clear()
     else:
         await callback.message.answer('Введите ваше полное имя (ФИО)')
         await state.set_state(EditSchedule.name)
-
-
-@admin_router.message(F.text, EditSchedule.name)
-async def get_name_functions(message: Message):
-    name = message.text
-    edit_schedule_function(path_to_database_schedule, EditSchedule.point, EditSchedule.day, name)
-    await message.answer('Таблица успешно изменена!', reply_markup=admin_keyboards.main())
 
 
 @admin_router.message(EditSchedule.name)
@@ -202,4 +196,5 @@ async def edit_schedule(message: Message, state: FSMContext) -> None:
     EditSchedule.name = message.text
     print(EditSchedule.name, EditSchedule.point, EditSchedule.day)
     edit_schedule_function(path_to_database_schedule, EditSchedule.point, EditSchedule.day)
+    await state.clear()
     await message.answer('Данные в таблице изменены')
