@@ -50,7 +50,7 @@ def get_all_chat_ids(path_to_database) -> list:
     data_cursor = sqlite3.connect(path_to_database).cursor()
     chat_ids = data_cursor.execute(f'''SELECT "chat_id"
                                         FROM "employees_passwords"''').fetchall()
-    chat_ids = [int(id_[0]) for id_ in chat_ids]
+    chat_ids = [int(id_[0]) for id_ in chat_ids if id_ != (None,)]
     return chat_ids
 
 

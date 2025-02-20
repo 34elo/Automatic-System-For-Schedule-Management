@@ -41,13 +41,6 @@ class EditSchedule(StatesGroup):
     name = State()
 
 
-def send_notifications(message) -> None:
-    chats = get_all_chat_ids(path_to_database_users)
-
-    for chat in chats:
-        Bot(token=config.bot_token.get_secret_value()).send_message(chat, message.text)
-
-
 def get_points() -> list[str]:  # список таблиц с точками
     return POINTS
 
@@ -66,7 +59,10 @@ async def send_notification_tg(message: Message, state: FSMContext) -> None:
 
 @admin_router.message(NotificationText.text)
 async def message_with_text(message: Message, state: FSMContext) -> None:
-    send_notifications(message)
+    chats = get_all_chat_ids(path_to_database_users)
+    bot = Bot(token=config.bot_token.get_secret_value())
+    for chat in chats:
+        await bot.send_message(chat_id=chat, text=message.text)
     await message.answer('Ваше уведомление сотрудникам отправлено', reply_markup=admin_keyboards.main())
     await state.clear()
 
