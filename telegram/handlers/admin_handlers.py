@@ -34,15 +34,12 @@ def auto_schedule_create(path_to_users_data, path_to_schedule):
                                                   FROM employees_wishes''').fetchall()
     employees = dict([(user[0], []) for user in employees])
 
-    print(employees)
-
     for point in POINTS:
         schedule = points_schedule.execute(f'''SELECT Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday
                                               FROM "{point}"''').fetchone()
         for i, employee in enumerate(schedule):
             if employee:
                 employees[employee].append(DAYS_DICT[i])
-    print(employees)
     for wish in wishes:
         for point in wish[1].split(';'):
             for day in wish[2].split(';'):
@@ -52,6 +49,21 @@ def auto_schedule_create(path_to_users_data, path_to_schedule):
                                             f'SET "{day}" = "{wish[0]}" '
                                             f'WHERE "Неделя" = "1"')
                     employees[wish[0]].append(day)
+    points_schedule.commit()
+    points_schedule.close()
+
+
+def edit_schedule_function(path_to_schedule, point, day, name=None,):
+    import sqlite3
+
+    points_schedule = sqlite3.connect(path_to_schedule)
+    schedule_cursor = points_schedule.cursor()
+    if name:
+        schedule_cursor.execute(f"""UPDATE '{point}'
+                                   SET {day} = '{name}'""").fetchall()
+    else:
+        schedule_cursor.execute(f"""UPDATE '{point}'
+                                    SET {day} = NULL""").fetchall()
     points_schedule.commit()
     points_schedule.close()
 
@@ -170,5 +182,5 @@ async def get_schedule_point(callback: CallbackQuery, state: FSMContext) -> None
 async def edit_schedule(message: Message, state: FSMContext) -> None:
     EditSchedule.name = message.text
     print(EditSchedule.name, EditSchedule.point, EditSchedule.day)
-    fix_edit_schedule()
+    edit_schedule_function(path_to_database_schedule, EditSchedule.point, EditSchedule.day)
     await message.answer('Данные в таблице изменены')
