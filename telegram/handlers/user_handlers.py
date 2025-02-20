@@ -22,9 +22,9 @@ async def check_points(message: Message) -> None:
     await message.answer(text, reply_markup=points_list(POINTS))
 
 
-@user_router.callback_query(F.data[:13] == 'get_schedule_')
+@user_router.callback_query(F.data[:12] == 'get_schedule')
 async def get_schedule_point(callback: CallbackQuery) -> None:
-    point = callback.data[13:]
+    point = callback.data[12:]
     table = f'Расписание {str(point)}\n\n'
     datas = get_schedule(str(point), path_to_database_schedule)
     if datas is None:

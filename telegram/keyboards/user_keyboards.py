@@ -21,7 +21,7 @@ def points_list(all_points: list) -> InlineKeyboardMarkup:
     for i in all_points:
         builder.add(InlineKeyboardButton(
             text=i,
-            callback_data=f"get_schedule_{i}"
+            callback_data=f"get_schedule{i}"
         ))
 
     # Располагаем все кнопки вертикально (по 2 в ряд)
