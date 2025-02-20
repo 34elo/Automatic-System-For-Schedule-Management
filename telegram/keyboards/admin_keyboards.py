@@ -78,3 +78,17 @@ def day_for_fix() -> InlineKeyboardMarkup:
     # Располагаем все кнопки вертикально (по 2 в ряд)
     builder.adjust(2)
     return builder.as_markup(resize_keyboard=True)
+
+
+def election_actions() -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+    buttons = ['назначить на смену', 'снять со смены']
+    for i in buttons:
+        builder.add(InlineKeyboardButton(
+            text=i,
+            callback_data=f"do_{i}"
+        ))
+
+    # Располагаем все кнопки вертикально (по 1 в ряд)
+    builder.adjust(1)
+    return builder.as_markup(resize_keyboard=True)

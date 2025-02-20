@@ -53,7 +53,7 @@ def auto_schedule_create(path_to_users_data, path_to_schedule):
     points_schedule.close()
 
 
-def edit_schedule_function(path_to_schedule, point, day, name=None,):
+def edit_schedule_function(path_to_schedule, point, day, name=None, ):
     import sqlite3
 
     points_schedule = sqlite3.connect(path_to_schedule)
@@ -81,6 +81,7 @@ class ScheduleText(StatesGroup):
 class Contact(StatesGroup):
     contact = State()
 
+
 class EditSchedule(StatesGroup):
     day = State()
     point = State()
@@ -94,7 +95,8 @@ def get_points() -> list[str]:  # список таблиц с точками
 @admin_router.message(F.text == "Сформировать частичный график")
 async def create_schedule(message: Message) -> None:
     auto_schedule_create(path_to_database_users, path_to_database_schedule)
-    await message.answer('График сформирован. Вы сможете ознакомиться с ним в меню "Расписание на точках"', reply_markup=admin_keyboards.main())
+    await message.answer('График сформирован. Вы сможете ознакомиться с ним в меню "Расписание на точках"',
+                         reply_markup=admin_keyboards.main())
 
 
 @admin_router.message(F.text == "Отправить уведомление сотрудникам")
@@ -160,22 +162,39 @@ async def fix_schedule(message: Message) -> None:
     text = 'Выберите точку из приведенных ниже для редактирования:\n\n'
     await message.answer(text, reply_markup=admin_keyboards.points_list_for_fix(POINTS))
 
+
 @admin_router.callback_query(F.data[:13] == 'fix_schedule_')
 async def get_schedule_point(callback: CallbackQuery, state: FSMContext) -> None:
     point = callback.data[13:]
     EditSchedule.point = point
     print(EditSchedule.point)
     datas = get_schedule(str(point), path_to_database_schedule)
-    await callback.message.answer('Теперь выберите ', reply_markup=admin_keyboards.day_for_fix())
+    await callback.message.answer('Теперь выберите день недели ', reply_markup=admin_keyboards.day_for_fix())
 
 
 @admin_router.callback_query(F.data[:13] == 'day_schedule_')
-async def get_schedule_point(callback: CallbackQuery, state: FSMContext) -> None:
+async def get_schedule_point_day(callback: CallbackQuery, state: FSMContext) -> None:
     day = callback.data[13:]
     EditSchedule.day = day
     print(EditSchedule.day)
-    await callback.message.answer('Введите ФИО сотрудника', reply_markup=admin_keyboards.main())
-    await state.set_state(EditSchedule.name)
+    await callback.message.answer('Выберите действие', reply_markup=admin_keyboards.election_actions())
+
+
+@admin_router.callback_query(F.data[:3] == 'do_')
+async def get_schedule_point_day(callback: CallbackQuery, state: FSMContext) -> None:
+    if callback.data[3:] == 'снять со смены':
+        edit_schedule_function(path_to_database_schedule, EditSchedule.point, EditSchedule.day)
+        await callback.message.answer('Таблица успешно изменена!', reply_markup=admin_keyboards.main())
+    else:
+        await callback.message.answer('Введите ваше полное имя (ФИО)')
+        await state.set_state(EditSchedule.name)
+
+
+@admin_router.message(F.text, EditSchedule.name)
+async def get_name_functions(message: Message):
+    name = message.text
+    edit_schedule_function(path_to_database_schedule, EditSchedule.point, EditSchedule.day, name)
+    await message.answer('Таблица успешно изменена!', reply_markup=admin_keyboards.main())
 
 
 @admin_router.message(EditSchedule.name)
