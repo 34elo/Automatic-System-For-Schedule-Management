@@ -21,7 +21,6 @@ def get_my_schedule(username, path_to_database_users_data, path_to_database_sche
     out = {}
     full_name = get_full_name_by_username(username, path_to_database_users_data)
     data_cursor = sqlite3.connect(path_to_database_schedule).cursor()
-
     for point in POINTS:
         schedule = data_cursor.execute(
             f'SELECT Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday FROM "{point}"').fetchone()
@@ -30,11 +29,4 @@ def get_my_schedule(username, path_to_database_users_data, path_to_database_sche
             days = [DAYS_DICT[ind] for ind, name in enumerate(schedule) if name == full_name]
             for i in days:
                 out[i] = point
-
     return out
-
-def fix_edit_schedule(full_name, point, day, path_to_database_schedule) -> None:
-    """
-    Изменяет график
-    """
-    pass

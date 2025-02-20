@@ -1,14 +1,11 @@
-import sqlite3
-
-from aiogram import Router, F, Bot
+from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery
-from aiogram.utils.text_decorations import MarkdownDecoration
 
 from database_functions.constants import POINTS, DAYS, DAYS_RU
 from database_functions.schedule_functions import get_schedule, get_my_schedule
-from database_functions.users_data_functions import get_all_chat_ids, get_employee_contact, get_admin_names, \
+from database_functions.users_data_functions import get_admin_names, \
     get_admin_contact, change_point_wishes, get_full_name_by_username, change_day_wishes
-from telegram.keyboards import admin_keyboards, user_keyboards
+from telegram.keyboards import user_keyboards
 from telegram.keyboards.user_keyboards import points_list, points_list_for_put_point
 
 user_router = Router()
@@ -32,7 +29,7 @@ async def get_schedule_point(callback: CallbackQuery) -> None:
     else:
         for i in range(len(DAYS)):
             if datas[i] is None:
-                data = "Отсутствует"
+                data = "Не занято"
             else:
                 data = datas[i]
             table += DAYS_RU[i].capitalize() + ' - ' + data + '\n'
@@ -42,7 +39,7 @@ async def get_schedule_point(callback: CallbackQuery) -> None:
 @user_router.message(F.text == "Получить своё расписание")
 async def check_points(message: Message) -> None:
     text = 'Ваше расписание:\n\n'
-    username = 'serjanchik'
+    username = message.from_user.username
     try:
         data = get_my_schedule(username, path_to_database_users, path_to_database_schedule)
     except TypeError:
@@ -54,7 +51,7 @@ async def check_points(message: Message) -> None:
         return
     if data == {}:
         await message.answer('Похоже у вас отсутствуют рабочие дни', reply_markup=user_keyboards.main())
-    for day in DAYS_RU:
+    for day in DAYS:
         if day in data:
             text += f'{day} - {data[day]}\n'
         else:

@@ -1,6 +1,4 @@
-import math
-
-from aiogram.types import InlineKeyboardButton, KeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder, ReplyKeyboardMarkup
 
 from database_functions.constants import DAYS, DAYS_RU
@@ -9,8 +7,8 @@ from database_functions.constants import DAYS, DAYS_RU
 def main() -> ReplyKeyboardMarkup:
     kb = ReplyKeyboardBuilder()
     kb.button(text="Сформировать частичный график")
-    kb.button(text="Отправить уведомление сотрудникам")
     kb.button(text="Расписание на точках")
+    kb.button(text="Отправить уведомление сотрудникам")
     kb.button(text="Связаться с сотрудником")
     kb.button(text="Редактировать график")
     kb.adjust(2)
