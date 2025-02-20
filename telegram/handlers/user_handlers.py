@@ -85,9 +85,10 @@ async def put_schedule_point(callback: CallbackQuery) -> None:
     print('log - put_schedule_point')
     point = callback.data[10:]
     try:
-        username = callback.message.from_user.username
+        username = callback.from_user.username
         full_name = get_full_name_by_username(username, path_to_database_users)
     except Exception as e:
+        print(e)
         await callback.message.answer('Вы отсутствуете в базе сотрудников', reply_markup=user_keyboards.main())
         return
 
@@ -106,9 +107,10 @@ async def put_day(callback: CallbackQuery) -> None:
     print('log - put_day')
     day = callback.data[8:]
     try:
-        username = callback.message.from_user.username
+        username = callback.from_user.username
         full_name = get_full_name_by_username(username, path_to_database_users)
     except Exception as e:
+        print(e)
         await callback.message.answer('Вы отсутствуете в базе сотрудников', reply_markup=user_keyboards.main())
         return
 
