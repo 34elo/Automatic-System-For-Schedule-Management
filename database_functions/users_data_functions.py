@@ -31,7 +31,7 @@ def get_employee_contact(emlpoyee_name, path_to_database) -> tuple:
     employee_contact = data_cursor.execute(f'''SELECT phone_number, username
                                         FROM employees_passwords
                                         WHERE full_name = "{emlpoyee_name}"''').fetchone()
-    return employee_contact
+    return employee_contact if employee_contact else None
 
 
 def get_full_name_by_username(username, path_to_database) -> str:

@@ -6,11 +6,11 @@ DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sun
 DAYS_RU = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье']
 
 DAYS_DICT = {
-    0: 'Понедельник',
-    1: 'Вторник',
-    2: 'Среда',
-    3: 'Четверг',
-    4: 'Пятница',
-    5: 'Суббота',
-    6: 'Воскресенье'
+    0: 'Monday',
+    1: 'Tuesday',
+    2: 'Wednesday',
+    3: 'Thursday',
+    4: 'Friday',
+    5: 'Saturday',
+    6: 'Sunday'
 }

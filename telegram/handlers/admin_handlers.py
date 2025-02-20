@@ -18,8 +18,42 @@ path_to_database_users = '../data/users_data.sqlite'
 path_to_database_schedule = '../data/schedule.sqlite'
 
 
-def auto_schedule_create():
-    pass
+def auto_schedule_create(path_to_users_data, path_to_schedule):
+    """Генерирует график на основе пожеланий сотрудников"""
+    import sqlite3
+    from database_functions.constants import POINTS, DAYS_DICT
+
+    wishes = sqlite3.connect(path_to_users_data)
+    wishes_cursor = wishes.cursor()
+    wishes = wishes_cursor.execute('''SELECT full_name, point_wishes, day_wishes
+                                          FROM employees_wishes''').fetchall()
+
+    points_schedule = sqlite3.connect(path_to_schedule)
+    schedule_cursor = points_schedule.cursor()
+    employees = wishes_cursor.execute('''SELECT full_name
+                                                  FROM employees_wishes''').fetchall()
+    employees = dict([(user[0], []) for user in employees])
+
+    print(employees)
+
+    for point in POINTS:
+        schedule = points_schedule.execute(f'''SELECT Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday
+                                              FROM "{point}"''').fetchone()
+        for i, employee in enumerate(schedule):
+            if employee:
+                employees[employee].append(DAYS_DICT[i])
+    print(employees)
+    for wish in wishes:
+        for point in wish[1].split(';'):
+            for day in wish[2].split(';'):
+                if schedule_cursor.execute(f'SELECT "{day}" FROM "{point}"').fetchone() == (None,) \
+                        and day not in employees[wish[0]]:
+                    schedule_cursor.execute(f'UPDATE "{point}" '
+                                            f'SET "{day}" = "{wish[0]}" '
+                                            f'WHERE "Неделя" = "1"')
+                    employees[wish[0]].append(day)
+    points_schedule.commit()
+    points_schedule.close()
 
 
 class NotificationText(StatesGroup):
@@ -47,7 +81,7 @@ def get_points() -> list[str]:  # список таблиц с точками
 
 @admin_router.message(F.text == "Сформировать частичный график")
 async def create_schedule(message: Message) -> None:
-    auto_schedule_create()
+    auto_schedule_create(path_to_database_users, path_to_database_schedule)
     await message.answer('График сформирован. Вы сможете ознакомиться с ним в меню "Расписание на точках"', reply_markup=admin_keyboards.main())
 
 
@@ -83,7 +117,7 @@ async def get_schedule_point(callback: CallbackQuery) -> None:
     else:
         for i in range(len(DAYS)):
             if datas[i] is None:
-                data = "Отсутствует"
+                data = "Не занято"
             else:
                 data = datas[i]
             table += DAYS_RU[i].capitalize() + ' - ' + data + '\n'
@@ -99,9 +133,12 @@ async def contact(message: Message, state: FSMContext) -> None:
 @admin_router.message(Contact.contact)
 async def state_contact(message: Message, state: FSMContext) -> None:
     data = get_employee_contact(message.text, path_to_database_users)
-    text = f'Информация о "{message.text}"\n\n'
-    text += f'Teлефон: {data[0]}\n'
-    text += f'Username: @{data[1]}'
+    if data:
+        text = f'Информация о "{message.text}"\n\n'
+        text += f'Teлефон: {data[0]}\n'
+        text += f'Username: @{data[1]}'
+    else:
+        text = 'Данный сотрудник не найден в базе данных'
     await message.answer(text, reply_markup=admin_keyboards.main())
     await state.clear()
 
