@@ -96,7 +96,7 @@ async def put_schedule_point(callback: CallbackQuery) -> None:
 
 @user_router.message(F.text == "Установить желаемую смену")
 async def put_point(message: Message) -> None:
-    await message.answer('Выберите желаемую точку', reply_markup=user_keyboards.days_list())
+    await message.answer('Выберите желаемую смену', reply_markup=user_keyboards.days_list())
 
 
 @user_router.callback_query(F.data[:8] == 'put_day_')
@@ -113,7 +113,7 @@ async def put_day(callback: CallbackQuery) -> None:
 
     change_day_wishes(full_name, day, 'set', path_to_database_users)
 
-    text = f'Смена успешна изменена на {day}'
+    text = f'Смена успешна изменена на {DAYS_RU[DAYS.index(day)]}'
     await callback.message.answer(text, reply_markup=user_keyboards.main())
 
 
@@ -136,7 +136,7 @@ async def del_day(callback: CallbackQuery) -> None:
 
     change_day_wishes(full_name, day, 'remove', path_to_database_users)
 
-    text = f'Смена успешна изменена на {day}'
+    text = f'Смена успешна изменена на {DAYS_RU[DAYS.index(day)]}'
     await callback.message.answer(text, reply_markup=user_keyboards.main())
 
 
@@ -159,5 +159,5 @@ async def del_day(callback: CallbackQuery) -> None:
 
     change_point_wishes(full_name, day, 'remove', path_to_database_users)
 
-    text = f'Смена успешна изменена на {day}'
+    text = f'Смена успешна изменена на {DAYS_RU[DAYS.index(day)]}'
     await callback.message.answer(text, reply_markup=user_keyboards.main())
