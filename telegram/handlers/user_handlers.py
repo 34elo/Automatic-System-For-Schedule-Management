@@ -122,6 +122,7 @@ async def edit_points(callback: CallbackQuery) -> None:
 
 @user_router.callback_query(F.data[:8] == 'del_day_')
 async def del_day(callback: CallbackQuery) -> None:
+    from database_functions.constants import DAYS_DICT_TO_RU
     print('log - del_day')
     day = callback.data[8:]
     try:
@@ -134,13 +135,13 @@ async def del_day(callback: CallbackQuery) -> None:
 
     change_day_wishes(full_name, day, 'remove', path_to_database_users)
 
-    text = f'{day} успешно удалена из ваших смен.'
+    text = f'{DAYS_DICT_TO_RU[day]} успешно удалена из ваших смен.'
     await callback.message.answer(text, reply_markup=user_keyboards.main())
 
 
 @user_router.callback_query(F.data[:8] == 'put_day_')
 async def del_day(callback: CallbackQuery) -> None:
-    print('log - del_day')
+    from database_functions.constants import DAYS_DICT_TO_RU
     day = callback.data[8:]
     try:
         username = callback.from_user.username
@@ -152,7 +153,7 @@ async def del_day(callback: CallbackQuery) -> None:
 
     change_day_wishes(full_name, day, 'set', path_to_database_users)
 
-    text = f'{day} успешно добавлена в ваши смены.'
+    text = f'{DAYS_DICT_TO_RU[day]} успешно добавлена в ваши смены.'
     await callback.message.answer(text, reply_markup=user_keyboards.main())
 
 

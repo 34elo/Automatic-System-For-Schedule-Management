@@ -14,3 +14,13 @@ DAYS_DICT = {
     5: 'Saturday',
     6: 'Sunday'
 }
+
+DAYS_DICT_TO_RU = {
+    'Monday': 'Понедельник',
+    'Tuesday': 'Вторник',
+    'Wednesday': 'Среда',
+    'Thursday': 'Четверг',
+    'Friday': 'Пятница',
+    'Saturday': 'Суббота',
+    'Sunday': 'Воскресенье'
+}
