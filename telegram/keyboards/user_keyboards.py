@@ -9,10 +9,8 @@ def main() -> ReplyKeyboardMarkup:
     kb.button(text="Получить расписание на точке")
     kb.button(text="Получить своё расписание")
     kb.button(text="Связь с администратором")
-    kb.button(text='Установить желаемую точку')
-    kb.button(text='Установить желаемую смену')
-    kb.button(text='Убрать желаемую смену')
-    kb.button(text='Убрать желаемую точку')
+    kb.button(text='Изменить желаемые точки')
+    kb.button(text='Изменить желаемые смены')
     kb.adjust(2)
     return kb.as_markup(resize_keyboard=True)
 
@@ -80,6 +78,34 @@ def points_list_delete(all_points: list) -> InlineKeyboardMarkup:
         builder.add(InlineKeyboardButton(
             text=i,
             callback_data=f"del_point_{i}"
+        ))
+
+    # Располагаем все кнопки вертикально (по 2 в ряд)
+    builder.adjust(2)
+    return builder.as_markup(resize_keyboard=True)
+
+
+def edit_point_wishes_actions() -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+    buttons = ['Добавить желаемую точку', 'Убрать желаемую точку']
+    for i in buttons:
+        builder.add(InlineKeyboardButton(
+            text=i,
+            callback_data=f"edit-points_{i}"
+        ))
+
+    # Располагаем все кнопки вертикально (по 2 в ряд)
+    builder.adjust(2)
+    return builder.as_markup(resize_keyboard=True)
+
+
+def edit_days_wishes_actions() -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+    buttons = ['Добавить желаемую смену', 'Убрать желаемую смену']
+    for i in buttons:
+        builder.add(InlineKeyboardButton(
+            text=i,
+            callback_data=f"edit-days_{i}"
         ))
 
     # Располагаем все кнопки вертикально (по 2 в ряд)
