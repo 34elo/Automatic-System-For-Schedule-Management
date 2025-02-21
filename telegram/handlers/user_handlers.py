@@ -115,3 +115,49 @@ async def put_day(callback: CallbackQuery) -> None:
 
     text = f'Смена успешна изменена на {day}'
     await callback.message.answer(text, reply_markup=user_keyboards.main())
+
+
+@user_router.message(F.text == "Убрать желаемую смену")
+async def del_point(message: Message) -> None:
+    await message.answer('Выберите желаемую смену', reply_markup=user_keyboards.days_list_delete())
+
+
+@user_router.callback_query(F.data[:8] == 'del_day_')
+async def del_day(callback: CallbackQuery) -> None:
+    print('log - del_day')
+    day = callback.data[8:]
+    try:
+        username = callback.from_user.username
+        full_name = get_full_name_by_username(username, path_to_database_users)
+    except Exception as e:
+        print(e)
+        await callback.message.answer('Вы отсутствуете в базе сотрудников', reply_markup=user_keyboards.main())
+        return
+
+    change_day_wishes(full_name, day, 'remove', path_to_database_users)
+
+    text = f'Смена успешна изменена на {day}'
+    await callback.message.answer(text, reply_markup=user_keyboards.main())
+
+
+@user_router.message(F.text == "Убрать желаемую точку")
+async def del_point(message: Message) -> None:
+    await message.answer('Выберите удаляемую желаемую точку', reply_markup=user_keyboards.points_list_delete(POINTS))
+
+
+@user_router.callback_query(F.data[:10] == 'del_point_')
+async def del_day(callback: CallbackQuery) -> None:
+    print('log - del_day')
+    day = callback.data[10:]
+    try:
+        username = callback.from_user.username
+        full_name = get_full_name_by_username(username, path_to_database_users)
+    except Exception as e:
+        print(e)
+        await callback.message.answer('Вы отсутствуете в базе сотрудников', reply_markup=user_keyboards.main())
+        return
+
+    change_point_wishes(full_name, day, 'remove', path_to_database_users)
+
+    text = f'Смена успешна изменена на {day}'
+    await callback.message.answer(text, reply_markup=user_keyboards.main())
